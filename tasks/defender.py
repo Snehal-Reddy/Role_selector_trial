@@ -6,11 +6,14 @@ from skills import sGoToPoint
 from skills import sGoToBall
 from skills import sKickToPoint
 
+#VERY IMPORTANT -
+# take into consideration that there can be more than 2 defenders
+
 class TDefender(object):
 	def __init__(self):
 		super(TDefender, self).__init__()
 
-	def getTargetPos(self,state,play):
+	def getTargetPos(self,state,play=-1):
         #blocking potential shots to goal
 		ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
 		attacker_id = state.opp_bot_closest_to_ball

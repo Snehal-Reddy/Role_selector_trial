@@ -7,10 +7,13 @@ from skills import sGoToBall
 from skills import sKickToPoint
 import marker_fuzz
 
+#VERY IMPORTANT -
+# take into consideration that there can be more than 2 markers
+
 class TMarker(object):
 	def __init__(self):
 		super(TMarker, self).__init__()
-	def getTargetPos(self,state,play):
+	def getTargetPos(self,state,play=-1):
 		#fuzzy logic for opponents
         ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
         attacker_id = state.opp_bot_closest_to_ball

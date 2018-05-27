@@ -6,17 +6,17 @@ from skills import sGoToPoint
 from skills import sGoToBall
 from skills import sKickToPoint
 
-number_of_distractors = 0
+
+#VERY IMPORTANT -
+# take into consideration that there can be more than 2 Distractors
 
 class TDistractor(object):
 	def __init__(self, arg):
 		super(TDistractor, self).__init__()
 		self.arg = arg
-	def getTargetPos(self,state,play):
-		global number_of_distractors 
-		number_of_distractors=number_of_distractors+1
+	def getTargetPos(self,state,play=-1):
 		x = 0
-		y = pow(-1,number_of_distractors)*1300*number_of_distractors
+		y = 1300
 		finalPos = Vector2D(x,y)
 
 		return finalPos
