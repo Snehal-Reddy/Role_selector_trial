@@ -36,7 +36,7 @@ class gameAnalyzer():
         required_task_dict = {}
         for i in xrange(len(tasks)):
             obj = task_dict[tasks[i]]()
-            required_task_dict[tasks[i]] = obj.getTargetPos(state)
+            required_task_dict[tasks[i]] = obj.getTargetPos(state,play)
 
         return required_task_dict
 

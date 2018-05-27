@@ -10,7 +10,7 @@ import marker_fuzz
 class TMarker(object):
 	def __init__(self):
 		super(TMarker, self).__init__()
-	def getTargetPos(self,state):
+	def getTargetPos(self,state,play):
 		#fuzzy logic for opponents
         ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
         attacker_id = state.opp_bot_closest_to_ball

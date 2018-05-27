@@ -10,7 +10,7 @@ class TDefender(object):
 	def __init__(self):
 		super(TDefender, self).__init__()
 
-	def getTargetPos(self,state):
+	def getTargetPos(self,state,play):
         #blocking potential shots to goal
 		ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
 		attacker_id = state.opp_bot_closest_to_ball

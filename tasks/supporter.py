@@ -9,5 +9,6 @@ from skills import sKickToPoint
 class TSupporter(object):
 	def __init__(self):
 		super(TSupporter, self).__init__()
-	def getTargetPos(self,state):
+	def getTargetPos(self,state,play):
+		pass
 		

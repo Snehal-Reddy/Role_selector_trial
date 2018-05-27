@@ -12,7 +12,7 @@ class TDistractor(object):
 	def __init__(self, arg):
 		super(TDistractor, self).__init__()
 		self.arg = arg
-	def getTargetPos(self,state):
+	def getTargetPos(self,state,play):
 		global number_of_distractors 
 		number_of_distractors=number_of_distractors+1
 		x = 0
