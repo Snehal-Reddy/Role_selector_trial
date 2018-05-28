@@ -72,7 +72,7 @@ class gameAnalyzer():
 
 			elif curPlay == 3:
 				#their indirect free kick
-				requiredTasks = ['Distractor','Clearer','Marker','Marker','Defender']
+				requiredTasks = ['Distractor','Defender','Marker','Marker','Defender']
 				tasks = self.intersection(requiredTasks, self.tasklist)
 				tasks = self.targetPoints(tasks)
 				bots = self.availableBots()
@@ -97,4 +97,60 @@ class gameAnalyzer():
 			print("this static play is not available!!")
 
 	def dynamicPlays():
+		ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
+		if state.ball_in_our_possession :
+
+			#clearing under complete defence 
+			if ballPos.x < -4500 + OUR_DBOX_MAXX:
+				#ball in our D
+				if ballPos.y < OUR_DBOX_MAXY + 200 and ballPos.y > OUR_DBOX_MINY - 200 :
+					requiredTasks = ['Distractor','Clearer','Marker','Defender','Defender']
+					tasks = self.intersection(requiredTasks, self.tasklist)
+					# task is dict, keyword -> tasks name, value -> their target point
+					tasks = self.targetPoints(tasks)
+					bots = self.availableBots()
+				#ball not in our D but still very close to goal
+				else:
+					requiredTasks = ['Distractor','Attacker','Marker','Defender','Defender']
+					tasks = self.intersection(requiredTasks, self.tasklist)
+					# task is dict, keyword -> tasks name, value -> their target point
+					tasks = self.targetPoints(tasks)
+					bots = self.availableBots()
+
+
+			#prepare for attack
+			elif ballPos.x < 1000  and ballPos.x > -1000 :
+				requiredTasks = ['Distractor','Defender','Attacker','Supporter','Defender']
+				tasks = self.intersection(requiredTasks, self.tasklist)
+				# task is dict, keyword -> tasks name, value -> their target point
+				tasks = self.targetPoints(tasks)
+				bots = self.availableBots()
+
+			#attack
+			elif ballPos.x > 1000 and ballPos.x < 4500 - OUR_DBOX_MAXX:
+				requiredTasks = ['Distractor','Distractor','Attacker','Supporter','Defender']
+				tasks = self.intersection(requiredTasks, self.tasklist)
+				# task is dict, keyword -> tasks name, value -> their target point
+				tasks = self.targetPoints(tasks)
+				bots = self.availableBots()	
+
+			#complete attack
+			elif ballPos.x > 4500 - OUR_DBOX_MAXX :
+				requiredTasks = ['Distractor','Supporter','Attacker','Supporter','Defender']
+				tasks = self.intersection(requiredTasks, self.tasklist)
+				# task is dict, keyword -> tasks name, value -> their target point
+				tasks = self.targetPoints(tasks)
+				bots = self.availableBots()	
+
+			#neutral play in our half
+			else:
+				requiredTasks = ['Distractor','Distractor','Attacker','Supporter','Defender']
+				tasks = self.intersection(requiredTasks, self.tasklist)
+				# task is dict, keyword -> tasks name, value -> their target point
+				tasks = self.targetPoints(tasks)
+				bots = self.availableBots()		
+
+
+
+
 
