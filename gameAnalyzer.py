@@ -58,7 +58,7 @@ class gameAnalyzer():
 
 			elif curPlay == 1:
 				# their direct free Kick
-				requiredTasks = ['Distractor','Clearer','Marker','Marker','Defender']
+				requiredTasks = ['Defender','Clearer','Marker','Marker','Defender']
 				tasks = self.intersection(requiredTasks, self.tasklist)
 				tasks = self.targetPoints(tasks)
 				bots = self.availableBots()
