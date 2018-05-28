@@ -14,7 +14,7 @@ class TDistractor(object):
 	def __init__(self, arg):
 		super(TDistractor, self).__init__()
 		self.arg = arg
-	def getTargetPos(self,state,play=-1):
+	def getTargetPos(self,state,play=-1,number):
 		x = 0
 		y = 1300
 		finalPos = Vector2D(x,y)

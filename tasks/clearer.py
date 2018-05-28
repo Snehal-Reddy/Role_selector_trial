@@ -9,5 +9,5 @@ from skills import sKickToPoint
 class TClearer(object):
 	def __init__(self, arg):
 		super(TClearer, self).__init__()
-	def getTargetPos(self,state,play=-1):
+	def getTargetPos(self,state,play=-1,number):
 		return Vector2D(int(state.ballPos.x),int(state.ballPos.y))

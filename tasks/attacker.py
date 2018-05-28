@@ -13,7 +13,7 @@ from skills import sKickToPoint
 class TAttacker(object):
 	def __init__(self):
 		super(TAttacker, self).__init__()
-	def getTargetPos(self,state,play=-1):
+	def getTargetPos(self,state,play=-1,number):
 		ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
 		x = ballPos.x
 		y = ballPos.y
