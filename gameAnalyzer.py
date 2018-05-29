@@ -1,5 +1,12 @@
 import enum
 import marker_fuzz
+import supporter
+import distractor
+import clearer
+import ballhandler
+import attacker
+import marker
+import defender
 
 LOOSE_BALL_THRESH  = 1.5
 BOT_BALL_THRESH = 100
