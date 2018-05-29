@@ -1,6 +1,8 @@
 import enum
 import marker_fuzz
 
+MIN_POSSESSION_DISTANCE  = 100
+
 class gameAnalyzer():
 	class staticPlays(enum.Enum):
 		FreeHomeKick = 0
@@ -19,7 +21,7 @@ class gameAnalyzer():
 		self.play = play
 		self.home_yellow = state.isteamyellow
 
-	def availableBots():
+	def availableBots(self,state):
 		# return list of available bots using state
 		bots = []
 		for i in xrange(len(state.homePos)):
@@ -28,7 +30,32 @@ class gameAnalyzer():
 
 		return bots
 
-	def targetPoints(tasks):
+    def ball_possession(self,state)
+    	global MIN_POSSESSION_DISTANCE  #thresholding to be done
+    	if(state.ball_in_our_possession==1):
+    		return "ourBall"
+    	homeBotPos = Vector2D(int(state.homePos[our_bot_closest_to_ball].x),int(state.homePos[our_bot_closest_to_ball].y))
+    	awayBotPos = Vector2D(int(state.awayPos[opp_bot_closest_to_ball].x),int(state.awayPos[opp_bot_closest_to_ball].y))
+    	ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
+    	ball_homeBot_dist = ballPos.dist(homeBotPos)
+    	ball_awayBot_dist = ballPos.dist(awayBotPos)
+    	if (ball_homeBot_dist > MIN_POSSESSION_DISTANCE and ball_awayBot_dist < MIN_POSSESSION_DISTANCE)
+    		return "theirBall"
+    	elif (ball_homeBot_dist < MIN_POSSESSION_DISTANCE and ball_awayBot_dist < MIN_POSSESSION_DISTANCE)
+    		return "contendedBall"
+    	else: 
+    		return "looseBall" #teams with faster bots have more chances of winning looseBall so assume that probability of winning looseBall<contendedBall
+
+	def opp_in_our_half(self,state):
+        count = 0
+        for i in range(len(state.awayPos)):
+            awayBotPos = Vector2D(int(state.awayPos[i].x),int(state.awayPos[i].y))
+            if ( (isteamyellow==0 and awayBotPos.x<=0) or (isteamyellow==1 and awayBotPos.x>=0) ):
+                count ++
+        return count
+
+
+	def targetPoints(self,state,tasks):
 		# input -> list of tasks(Tactics)
 		# ouput -> a dict, keyword -> tasks name, value -> their target point
 
@@ -93,7 +120,8 @@ class gameAnalyzer():
 
 		return required_task_dict
 
-	def staticPlays():
+
+	def staticPlays(self,state):
 		curPlay = -1
 		for play in staticPlays:
 			if play.value == self.play:
@@ -105,7 +133,7 @@ class gameAnalyzer():
 				requiredTasks = ['BallHandler','Attacker','Supporter','Supporter','Defender']  # add more task here
 				#tasks = self.intersection(requiredTasks, self.tasklist)
 				# task is dict, keyword -> tasks name, value -> their target point
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots
 
@@ -113,7 +141,7 @@ class gameAnalyzer():
 				# their direct free Kick
 				#requiredTasks = ['Defenderh','Clearer','Marker','Marker','Defender']
 				tasks = self.intersection(requiredTasks, self.tasklist)
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots
 
@@ -121,7 +149,7 @@ class gameAnalyzer():
 				#our indirect free kick
 				requiredTasks = ['BallHandler','Attacker','Supporter','Defender','Distractor']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots
 
@@ -129,7 +157,7 @@ class gameAnalyzer():
 				#their indirect free kick
 				requiredTasks = ['Distractor','Defender','Marker','Marker','Defender']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots
 
@@ -138,7 +166,7 @@ class gameAnalyzer():
 				requiredTasks = ['BallHandler','Attacker','Supporter','Distractor','Defender']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
 				# task is dict, keyword -> tasks name, value -> their target point
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots
 
@@ -147,16 +175,19 @@ class gameAnalyzer():
 				requiredTasks = ['Distractor','Clearer','Marker','Marker','Defender']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
 				# task is dict, keyword -> tasks name, value -> their target point
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots
 
 		else:
 			print("this static play is not available!!")
 
-	def dynamicPlays():
+	def dynamicPlays(self,state):
+
+		number_of_attackers= self.opp_in_our_half(state,list_attackers)
 		ballPos = Vector2D(int(state.ballPos.x), int(state.ballPos.y))
-		if state.ball_in_our_possession :
+
+		if self.ball_possession(state) == ourBall :
 
 			#clearing under complete defence 
 			if ballPos.x < -4500 + OUR_DBOX_MAXX:
@@ -165,7 +196,7 @@ class gameAnalyzer():
 					requiredTasks = ['Distractor','Clearer','Marker','Defender','Defender']
 					#tasks = self.intersection(requiredTasks, self.tasklist)
 					# task is dict, keyword -> tasks name, value -> their target point
-					tasks = self.targetPoints(requiredTasks)
+					tasks = self.targetPoints(state,requiredTasks)
 					bots = self.availableBots()
 					return tasks, bots
 
@@ -174,7 +205,7 @@ class gameAnalyzer():
 					requiredTasks = ['Distractor','Attacker','Marker','Defender','Defender']
 					#tasks = self.intersection(requiredTasks, self.tasklist)
 					# task is dict, keyword -> tasks name, value -> their target point
-					tasks = self.targetPoints(requiredTasks)
+					tasks = self.targetPoints(state,requiredTasks)
 					bots = self.availableBots()
 					return tasks, bots
 
@@ -184,7 +215,7 @@ class gameAnalyzer():
 				requiredTasks = ['Distractor','Defender','Attacker','Supporter','Defender']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
 				# task is dict, keyword -> tasks name, value -> their target point
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots
 
@@ -193,7 +224,7 @@ class gameAnalyzer():
 				requiredTasks = ['Distractor','Distractor','Attacker','Supporter','Defender']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
 				# task is dict, keyword -> tasks name, value -> their target point
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()
 				return tasks, bots	
 
@@ -202,7 +233,7 @@ class gameAnalyzer():
 				requiredTasks = ['Distractor','Supporter','Attacker','Supporter','Defender']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
 				# task is dict, keyword -> tasks name, value -> their target point
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()	
 				return tasks, bots
 
@@ -211,9 +242,122 @@ class gameAnalyzer():
 				requiredTasks = ['Distractor','Distractor','Attacker','Supporter','Defender']
 				#tasks = self.intersection(requiredTasks, self.tasklist)
 				# task is dict, keyword -> tasks name, value -> their target point
-				tasks = self.targetPoints(requiredTasks)
+				tasks = self.targetPoints(state,requiredTasks)
 				bots = self.availableBots()	
-				return tasks, bots	
+				return tasks, bots
+
+
+		elif self.ball_possession == theirBall: 
+
+            if (state.ball_in_our_half==0):
+
+                if (number_of_attackers==0):
+                    requiredTasks = ['BallHandler','Marker','Defender','Marker','Supporter']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                elif (number_of_attackers==1):
+                    requiredTasks = ['BallHandler','Marker','Defender','Supporter','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                else:
+                    requiredTasks = ['BallHandler','Marker','Defender','Defender','Marker']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+
+            else:
+
+                if (number_of_attackers==1):
+                    requiredTasks = ['BallHandler','Defender','Defender','Supporter','Supporter']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                if (number_of_attackers==2):
+                    requiredTasks = ['BallHandler','Marker','Defender','Defender','Supporter']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                else:
+                    requiredTasks = ['BallHandler','Marker','Marker','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+
+        elif self.ball_possession == contendedBall:
+
+        	if (state.ball_in_our_half==0):
+
+        		if (number_of_attackers==0):
+                    requiredTasks = ['Attacker','Supporter','Distractor','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                elif (number_of_attackers==1):
+                    requiredTasks = ['Attacker','Supporter','Marker','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                elif (number_of_attackers==2):
+                    requiredTasks = ['Attacker','Supporter','Marker','Marker','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                else:
+                    requiredTasks = ['Attacker','Marker','Defender','Defender','Marker']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+
+            else:
+
+                if (number_of_attackers==1):
+                    requiredTasks = ['Attacker','Supporter','Supporter','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                if (number_of_attackers==2):
+                    requiredTasks = ['Attacker','Supporter','Marker','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                else:
+                    requiredTasks = ['Attacker','Marker','Marker','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+
+
+        elif self.ball_possession == looseBall:
+
+        	if (state.ball_in_our_half==0):
+
+        		if (number_of_attackers==0):
+                    requiredTasks = ['Attacker','Supporter','Distractor','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                elif (number_of_attackers==1):
+                    requiredTasks = ['Attacker','Supporter','Marker','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                elif (number_of_attackers==2):
+                    requiredTasks = ['Attacker','Supporter','Marker','Marker','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                else:
+                    requiredTasks = ['Attacker','Marker','Defender','Defender','Marker']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+
+            else:
+
+                if (number_of_attackers==1):
+                    requiredTasks = ['Attacker','Supporter','Supporter','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                if (number_of_attackers==2):
+                    requiredTasks = ['Attacker','Supporter','Marker','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+                else:
+                    requiredTasks = ['Attacker','Marker','Marker','Defender','Defender']
+                    tasks = self.targetPoints(state,requiredTasks)
+                    bots = self.availableBots()
+
+
+
+
+
+
+
 
 
 
