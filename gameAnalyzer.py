@@ -1,12 +1,12 @@
 import enum
-import marker_fuzz
-import supporter
-import distractor
-import clearer
-import ballhandler
-import attacker
-import marker
-import defender
+from tasks import marker_fuzz
+from tasks import supporter
+from tasks import distractor
+from tasks import clearer
+from tasks import ballhandler
+from tasks import attacker
+from tasks import marker
+from tasks import defender
 
 LOOSE_BALL_THRESH  = 1.5
 BOT_BALL_THRESH = 100
