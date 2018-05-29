@@ -51,7 +51,7 @@ class gameAnalyzer():
         for i in range(len(state.awayPos)):
             awayBotPos = Vector2D(int(state.awayPos[i].x),int(state.awayPos[i].y))
             if ( (isteamyellow==0 and awayBotPos.x<=0) or (isteamyellow==1 and awayBotPos.x>=0) ):
-                count ++
+                count +=1
         return count
 
 
